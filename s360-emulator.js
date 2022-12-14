@@ -2,6 +2,14 @@ let memory;
 let gpr = new Array(8);
 let psw;
 
+function writePSW(field, value) {
+    switch (field) {
+        case "PM":
+            psw = (psw & 0xFFFFFF0FFFFFFFFF) | (value << 36);
+            break;
+    }
+}
+
 function directAddress(displacement, base) {
     return (displacement << 3) | base;
 }
