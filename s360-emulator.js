@@ -199,6 +199,10 @@ function fetchSS3() {
     };
 }
 
+function spm(pm) {
+    writePSW("PM", pm);
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
