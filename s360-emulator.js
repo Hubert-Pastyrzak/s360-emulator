@@ -1,6 +1,10 @@
 let memory;
 let gpr = new Array(8);
 
+function directAddress(displacement, base) {
+    return (displacement << 3) | base;
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
