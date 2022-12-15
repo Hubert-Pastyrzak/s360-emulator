@@ -305,15 +305,22 @@ function basr() {
 
 function lpr(targetRegister, sourceRegister) {
     gpr[targetRegister] = Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 2);
 }
 
 function lnr(targetRegister, sourceRegister) {
     gpr[targetRegister] = -Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 1);
 }
 
 function ltr(targetRegister, sourceRegister) {
     gpr[targetRegister] = gpr[sourceRegister];
-    gpr[sourceRegister] = Math.abs(gpr[sourceRegister]);
 
     if (gpr[targetRegister] === 0)
         writePSW("CC", 0);
@@ -383,6 +390,212 @@ function cr(r1, r2) {
     else if (gpr[r1] < gpr[r2])
         writePSW("CC", 1);
     else if (gpr[r1] > gpr[r2])
+        writePSW("CC", 2);
+}
+
+function ar(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] += gpr[sourceRegister];
+    if ((oldTargetRegister >= 0 && gpr[sourceRegister] >= 0 && gpr[targetRegister] < 0) || (oldTargetRegister < 0 && gpr[sourceRegister] < 0 && gpr[targetRegister] >= 0))
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+
+    //TODO: Operation exception
+}
+
+function sr(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] -= gpr[sourceRegister];
+    if ((oldTargetRegister >= 0 && gpr[sourceRegister] < 0 && gpr[targetRegister] < 0) || (oldTargetRegister < 0 && gpr[sourceRegister] >= 0 && gpr[targetRegister] >= 0))
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+
+    //TODO: Operation exception
+}
+
+function mr(targetRegister, sourceRegister) {
+    if (targetRegister % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    let result = gpr[targetRegister + 1] * gpr[sourceRegister];
+    gpr[targetRegister] = (result & 0xFFFFFFFF00000000) >> 32;
+    gpr[targetRegister + 1] = result & 0x00000000FFFFFFFF;
+}
+
+function dr(targetRegister, sourceRegister) {
+    if (targetRegister % 2 === 1 || gpr[sourceRegister] === 0) {
+        //TODO: Operation exception
+        return;
+    }
+
+    let divident = (gpr[targetRegister] << 32) | (gpr[targetRegister + 1]);
+    gpr[targetRegister] = divident / gpr[sourceRegister];
+    gpr[targetRegister + 1] = divident % gpr[sourceRegister];
+
+    //TODO: Operation exception
+}
+
+function alr(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] += gpr[sourceRegister];
+
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", readPSW() & 2);
+    else
+        writePSW("CC", readPSW() | 1);
+
+    if (gpr[targetRegister] < oldTargetRegister)
+        writePSW("CC", readPSW() | 2);
+    else
+        writePSW("CC", readPSW() & 1);
+}
+
+function slr(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] -= gpr[sourceRegister];
+
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", readPSW() & 2);
+    else
+        writePSW("CC", readPSW() | 1);
+
+    if (gpr[targetRegister] > oldTargetRegister)
+        writePSW("CC", readPSW() | 2);
+    else
+        writePSW("CC", readPSW() & 1);
+}
+
+function lpdr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 2);
+}
+
+function lndr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = -Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 1);
+}
+
+function ltdr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+
+    if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+
+    if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function lcdr(r1, r2) {
+    if (gpr[r1] === gpr[r2])
+        writePSW("CC", 0);
+    
+    if (gpr[r1] < gpr[r2])
+        writePSW("CC", 1);
+
+    if (gpr[r1] > gpr[r2])
+        writePSW("CC", 2);
+}
+
+function hdr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister] / 2;
+}
+
+function lrdr(targetRegister, sourceRegister) {
+    //TODO
+}
+
+function mxr(targetRegister, sourceRegister) {
+    if (targetRegister % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    let result = gpr[targetRegister + 1] * gpr[sourceRegister];
+    gpr[targetRegister] = (result & 0xFFFFFFFF00000000) >> 32;
+    gpr[targetRegister + 1] = result & 0x00000000FFFFFFFF;
+}
+
+function mxdr(targetRegister, sourceRegister) {
+    if (targetRegister % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    let result = gpr[targetRegister + 1] * gpr[sourceRegister];
+    gpr[targetRegister] = (result & 0xFFFFFFFF00000000) >> 32;
+    gpr[targetRegister + 1] = result & 0x00000000FFFFFFFF;
+}
+
+function ldr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+}
+
+function cdr() {
+    //TODO
+}
+
+function adr() {
+    //TODO
+}
+
+function sdr() {
+    //TODO
+}
+
+function mdr() {
+    //TODO
+}
+
+function ddr() {
+    //TODO
+}
+
+function awr(targetRegister, sourceRegister) {
+    let oldTargetRegister = targetRegister;
+    gpr[targetRegister] += gpr[sourceRegister];
+
+    if (gpr[targetRegister] < oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function swr(targetRegister, sourceRegister) {
+    let oldTargetRegister = targetRegister;
+    gpr[targetRegister] -= gpr[sourceRegister];
+
+    if (gpr[targetRegister] > oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
         writePSW("CC", 2);
 }
 
