@@ -357,8 +357,32 @@ function clr(r1, r2) {
         writePSW("CC", 2);
 }
 
+function or(targetRegister, sourceRegister) {
+    gpr[targetRegister] |= gpr[sourceRegister];
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
         writePSW("CC", 1);
+}
+
+function xr(targetRegister, sourceRegister) {
+    gpr[targetRegister] ^= gpr[sourceRegister];
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 1);
+}
+
+function lr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+}
+
+function cr(r1, r2) {
+    if (gpr[r1] === gpr[r2])
+        writePSW("CC", 0);
     else if (gpr[r1] < gpr[r2])
+        writePSW("CC", 1);
+    else if (gpr[r1] > gpr[r2])
         writePSW("CC", 2);
 }
 
