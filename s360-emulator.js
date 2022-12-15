@@ -242,6 +242,23 @@ function bctr(targetRegister, branchRegister) {
     writePSW("IA", gpr[branchRegister]);
 }
 
+function bcr(maskValue, branchRegister) {
+    if (branchRegister === 0 || maskValue === 0)
+        return;
+
+    let conditionMask = 8 >> readPSW("CC");
+    if (maskValue !== 15 && conditionMask & maskValue === 0)
+        return;
+
+    if (gpr[branchRegister] % 2 === 1 || gpr[branchRegister] >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Storage key check
+    writePSW("IA", gpr[branchRegister]);
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
