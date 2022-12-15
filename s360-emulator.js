@@ -214,6 +214,23 @@ function spm(pm) {
     writePSW("PM", pm);
 }
 
+function balr(targetRegister, sourceRegister) {
+    //TODO: Modes
+}
+
+function bctr(targetRegister, branchRegister) {
+    gpr[targetRegister]--;
+    if (branchRegister === 0 || gpr[targetRegister] === 0)
+        return;
+
+    if (gpr[branchRegister] % 2 === 1 || gpr[branchRegister] >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Storage key check
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
