@@ -351,7 +351,12 @@ function nr(targetRegister, sourceRegister) {
 function clr(r1, r2) {
     if (gpr[r1] === gpr[r2])
         writePSW("CC", 0);
+    else if (gpr[r1] < gpr[r2])
+        writePSW("CC", 1);
     else if (gpr[r1] > gpr[r2])
+        writePSW("CC", 2);
+}
+
         writePSW("CC", 1);
     else if (gpr[r1] < gpr[r2])
         writePSW("CC", 2);
