@@ -239,6 +239,7 @@ function bctr(targetRegister, branchRegister) {
     }
 
     //TODO: Storage key check
+    writePSW("IA", gpr[branchRegister]);
 }
 
 function setMemorySize(size) {
