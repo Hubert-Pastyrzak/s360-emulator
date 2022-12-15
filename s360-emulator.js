@@ -340,6 +340,23 @@ function lcr(targetRegister, sourceRegister) {
     //TODO: Operation exception
 }
 
+function nr(targetRegister, sourceRegister) {
+    gpr[targetRegister] &= gpr[sourceRegister];
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 1);
+}
+
+function clr(r1, r2) {
+    if (gpr[r1] === gpr[r2])
+        writePSW("CC", 0);
+    else if (gpr[r1] > gpr[r2])
+        writePSW("CC", 1);
+    else if (gpr[r1] < gpr[r2])
+        writePSW("CC", 2);
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
