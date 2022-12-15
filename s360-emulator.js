@@ -325,6 +325,21 @@ function ltr(targetRegister, sourceRegister) {
         writePSW("CC", 2);
 }
 
+function lcr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = -gpr[sourceRegister];
+    
+    if (gpr[targetRegister] === 0x80000000)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 2);
+
+    //TODO: Operation exception
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
