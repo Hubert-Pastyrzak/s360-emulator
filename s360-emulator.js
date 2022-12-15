@@ -4,6 +4,10 @@ let psw;
 
 function writePSW(field, value) {
     switch (field) {
+        case "CC":
+            psw = (psw & 0xFFFFFFF3FFFFFFFF) | (value << 34);
+            break;
+
         case "PM":
             psw = (psw & 0xFFFFFF0FFFFFFFFF) | (value << 36);
             break;
@@ -16,6 +20,12 @@ function writePSW(field, value) {
 
 function readPSW(field) {
     switch (field) {
+        case "CC":
+            return (psw & 0x0000000C00000000) >> 34;
+
+        case "PM":
+            return (psw & 0x000000F000000000) >> 36;
+    
         case "IA":
             return (psw & 0xFFFFFF0000000000) >> 40;
     }
