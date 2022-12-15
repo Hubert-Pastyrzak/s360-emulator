@@ -7,6 +7,17 @@ function writePSW(field, value) {
         case "PM":
             psw = (psw & 0xFFFFFF0FFFFFFFFF) | (value << 36);
             break;
+
+        case "IA":
+            psw = (psw & 0x000000FFFFFFFFFF) | (value << 40);
+            break;
+    }
+}
+
+function readPSW(field) {
+    switch (field) {
+        case "IA":
+            return (psw & 0xFFFFFF0000000000) >> 40;
     }
 }
 
