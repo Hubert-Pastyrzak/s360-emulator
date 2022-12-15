@@ -2,6 +2,28 @@ let memory;
 let gpr = new Array(8);
 let psw;
 
+function writeMemory(address, value) {
+    switch (value.length) {
+        case 8:
+            memory[address] = (value.value & 0xFF00000000000000) >> 56;
+            memory[address + 1] = (value.value & 0x00FF000000000000) >> 48;
+            memory[address + 2] = (value.value & 0x0000FF0000000000) >> 40;
+            memory[address + 3] = (value.value & 0x000000FF00000000) >> 32;
+            memory[address + 4] = (value.value & 0x00000000FF000000) >> 24;
+            memory[address + 5] = (value.value & 0x0000000000FF0000) >> 16;
+            memory[address + 6] = (value.value & 0x000000000000FF00) >> 8;
+            memory[address + 7] = value.value & 0x00000000000000FF;
+            break;
+    }
+}
+
+function readMemory(address, length) {
+    switch (length) {
+        case 8:
+            return (memory[address] << 56) | (memory[address + 1] << 48) | (memory[address + 2] << 40) | (memory[address + 3] << 32) | (memory[address + 4] << 24) | (memory[address + 5] << 16) | (memory[address + 6] << 8) | memory[address + 7];
+    }
+}
+
 function writePSW(field, value) {
     switch (field) {
         case "CC":
