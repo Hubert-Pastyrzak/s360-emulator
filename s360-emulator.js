@@ -299,6 +299,32 @@ function svc(number) {
     psw = readMemory(96, 8);   
 }
 
+function basr() {
+    //TODO: Modes
+}
+
+function lpr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = Math.abs(gpr[sourceRegister]);
+}
+
+function lnr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = -Math.abs(gpr[sourceRegister]);
+}
+
+function ltr(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+    gpr[sourceRegister] = Math.abs(gpr[sourceRegister]);
+
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+
+    if (gpr[targetRegister] > 0)
+        writePSW("CC", 1);
+
+    if (gpr[targetRegister] < 0)
+        writePSW("CC", 2);
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
