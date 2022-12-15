@@ -281,6 +281,24 @@ function bcr(maskValue, branchRegister) {
     writePSW("IA", gpr[branchRegister]);
 }
 
+function ssk() {
+    //TODO: Set storage key
+}
+
+function isk(targetRegister, sourceRegister) {
+    //TODO: Privileged operation
+    //TODO: Get storage key
+}
+
+function svc(number) {
+    writeMemory(32, {
+        length: 8,
+        value: psw
+    });
+    //TODO: Store interrupt number
+    psw = readMemory(96, 8);   
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
