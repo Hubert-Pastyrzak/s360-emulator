@@ -4,6 +4,15 @@ let psw;
 
 function writeMemory(address, value) {
     switch (value.length) {
+        case 1:
+            memory[address] = value.value;
+            break;
+
+        case 2:
+            memory[address] = (value.value & 0xFF00) >> 8;
+            memory[address + 1] = value.value & 0x00FF;
+            break;
+
         case 8:
             memory[address] = (value.value & 0xFF00000000000000) >> 56;
             memory[address + 1] = (value.value & 0x00FF000000000000) >> 48;
@@ -19,6 +28,12 @@ function writeMemory(address, value) {
 
 function readMemory(address, length) {
     switch (length) {
+        case 1:
+            return memory[address];
+
+        case 2:
+            return (memory[address] << 8) | memory[address + 1];
+
         case 8:
             return (memory[address] << 56) | (memory[address + 1] << 48) | (memory[address + 2] << 40) | (memory[address + 3] << 32) | (memory[address + 4] << 24) | (memory[address + 5] << 16) | (memory[address + 6] << 8) | memory[address + 7];
     }
@@ -597,6 +612,416 @@ function swr(targetRegister, sourceRegister) {
         writePSW("CC", 1);
     else if (gpr[targetRegister] > 0)
         writePSW("CC", 2);
+}
+
+function lper(targetRegister, sourceRegister) {
+    gpr[targetRegister] = Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 2);
+}
+
+function lner(targetRegister, sourceRegister) {
+    gpr[targetRegister] = -Math.abs(gpr[sourceRegister]);
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else
+        writePSW("CC", 1);
+}
+
+function lter(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function lcer(targetRegister, sourceRegister) {
+    gpr[targetRegister] = -gpr[sourceRegister];
+    if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function her(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister] / 2;
+}
+
+function lrer() {
+    //TODO
+}
+
+function axr(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] += gpr[sourceRegister];
+
+    if (gpr[targetRegister] < oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function sxr(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] -= gpr[sourceRegister];
+
+    if (gpr[targetRegister] > oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function ler(targetRegister, sourceRegister) {
+    gpr[targetRegister] = gpr[sourceRegister];
+}
+
+function cer(r1, r2) {
+    if (gpr[r1] === gpr[r2])
+        writePSW("CC", 0);
+    else if (gpr[r1] < gpr[r2])
+        writePSW("CC", 1);
+    else if (gpr[r1] > gpr[r2])
+        writePSW("CC", 2);
+}
+
+function aer(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] += gpr[sourceRegister];
+
+    if (gpr[targetRegister] < oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function ser(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] -= gpr[sourceRegister];
+
+    if (gpr[targetRegister] > oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function mer() {
+    //TODO
+}
+
+function der() {
+    //TODO
+}
+
+function aur(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] += gpr[sourceRegister];
+
+    if (gpr[targetRegister] < oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function sur(targetRegister, sourceRegister) {
+    let oldTargetRegister = gpr[targetRegister];
+    gpr[targetRegister] -= gpr[sourceRegister];
+
+    if (gpr[targetRegister] > oldTargetRegister)
+        writePSW("CC", 3);
+    else if (gpr[targetRegister] === 0)
+        writePSW("CC", 0);
+    else if (gpr[targetRegister] < 0)
+        writePSW("CC", 1);
+    else if (gpr[targetRegister] > 0)
+        writePSW("CC", 2);
+}
+
+function sth(r1, x2, b2, d2) {
+    writeMemory(gpr[b2] + gpr[d2] + x2, {
+        length: 2,
+        value: gpr[r1] & 0x000000000000FFFF
+    });
+}
+
+function la(targetRegister, offset, indexRegister, baseRegister) {
+    let index = (indexRegister === 0) ? 0 : gpr[indexRegister];
+    let base = (baseRegister === 0) ? 0 : gpr[baseRegister];
+    gpr[targetRegister] = base + index + offset;
+}
+
+function stc(r1, x2, b2, d2) {
+    writeMemory(gpr[b2] + gpr[d2] + x2, {
+        length: 1,
+        value: (gpr[r1] & 0x00000000FF000000) >> 24
+    });
+}
+
+function ic(r1, x2, b2, d2) {
+    gpr[r1] = (gpr[r1] & 0xFFFFFFFF00FFFFFF) | (readMemory(gpr[b2] + gpr[d2] + x2) << 24);
+}
+
+function ex(r1, x2, b2, d2) {
+    let address = gpr[b2] + gpr[d2] + x2;
+    if (address % 2 === 1) {
+        //TODO: Address exception
+        return;
+    }
+
+    if (readMemory(address, 1) === 0x44) {
+        //TODO: Execute exception
+        return;
+    }
+
+    //TODO: Operation exception
+    //TODO: Protect violate exception
+    writeMemory(address + 1, {
+        length: 1,
+        value: readMemory(address + 1) | gpr[r1]
+    });
+
+    //TODO: Execute
+}
+
+function bal() {
+    //TODO: Modes
+}
+
+function bct(targetRegister, indexRegister, baseRegister, displacement) {
+    let index = (indexRegister === 0) ? 0 : gpr[indexRegister];
+    let base = (baseRegister === 0) ? 0 : gpr[baseRegister];
+    gpr[targetRegister]--;
+    if (gpr[targetRegister] === 0) {
+        if ((base + index + displacement) >= memory.length) {
+            //TODO: Specification exception
+            return;
+        }
+
+        if ((base + index + displacement) % 2 === 1) {
+            //TODO: Address exception
+            return;
+        }
+
+        //TODO: Protect violate exception
+        writePSW("IA", base + index + displacement);
+    }
+}
+
+function bc(mask, indexRegister, baseRegister, offset) {
+    if (baseRegister === 0 || mask === 0)
+        return;
+
+    let index = (indexRegister === 0) ? 0 : gpr[indexRegister];
+    let base = gpr[baseRegister];
+    let conditionMask = 8 >> readPSW("CC");
+    if (mask === 15 || conditionMask & mask !== 0) {
+        if ((base + index + offset) >= memory.length) {
+            //TODO: Operation exception
+            return;
+        }
+        
+        if ((base + index + offset) % 2 === 1) {
+            //TODO: Operation exception
+            return;
+        }
+
+        //TODO: Protect violate exception
+        writePSW("IA", base + index + offset);
+    }
+}
+
+function lh(targetRegister, indexRegister, baseRegister, displacement) {
+    let index = (indexRegister === 0) ? 0 : gpr[indexRegister];
+    let base = (baseRegister === 0) ? 0 : gpr[baseRegister];
+    let address = base + index + displacement;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    gpr[targetRegister] = (gpr[targetRegister] & 0xFFFFFFFFFFFF0000) | readMemory(address, 2);
+}
+
+function ch(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    if (gpr[r1] === readMemory(address, 2))
+        writePSW("CC", 0);
+    else if (gpr[r1] < readMemory(address, 2))
+        writePSW("CC", 1);
+    else if (gpr[r1] > readMemory(address, 2))
+        writePSW("CC", 2);
+}
+
+function ah(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    let oldR1 = gpr[r1];
+    gpr[r1] += readMemory(address, 2);
+
+    if (gpr[r1] < oldR1)
+        writePSW("CC", 3);
+    else if (gpr[r1] === 0)
+        writePSW("CC", 0);
+    else if (gpr[r1] < 0)
+        writePSW("CC", 1);
+    else if (gpr[r1] > 0)
+        writePSW("CC", 2);
+}
+
+function sh(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    let oldR1 = gpr[r1];
+    gpr[r1] -= readMemory(address, 2);
+
+    if (gpr[r1] > oldR1)
+        writePSW("CC", 3);
+    else if (gpr[r1] === 0)
+        writePSW("CC", 0);
+    else if (gpr[r1] < 0)
+        writePSW("CC", 1);
+    else if (gpr[r1] > 0)
+        writePSW("CC", 2);
+}
+
+function mh(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    gpr[targetRegister] *= readMemory(address, 2);
+}
+
+function bas() {
+    //TODO
+}
+
+function cvd(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 8 !== 0) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    writeMemory(address, {
+        length: 8,
+        value: ((gpr[r1] % 10) << 4) | ((gpr[r1] / 10 % 10) << 8) | ((gpr[r1] / 100 % 10) << 12) | ((gpr[r1] / 1000 % 10) << 16) | ((gpr[r1] / 10000 % 10) << 20) | ((gpr[r1] / 100000 % 10) << 24) | ((gpr[r1] / 1000000 % 10) << 28) | ((gpr[r1] / 10000000 % 10) << 32) | ((gpr[r1] / 100000000 % 10) << 36) | ((gpr[r1] / 1000000000 % 10) << 40) | ((gpr[r1] / 10000000000 % 10) << 44) | ((gpr[r1] / 100000000000 % 10) << 48) | ((gpr[r1] / 1000000000000 % 10) << 52) | ((gpr[r1] / 10000000000000 % 10) << 56) | ((gpr[r1] / 100000000000000 % 10) << 60)
+        //TODO: Store sign
+    });
+}
+
+function cvb(r1, x2, b2, d2) {
+    let index = (x2 === 0) ? 0 : gpr[x2];
+    let base = (b2 === 0) ? 0 : gpr[b2];
+    let address = base + index + d2;
+
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 8 !== 0) {
+        //TODO: Operation exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    let value = readMemory(address, 8);
+    gpr[r1] = ((value & 0x00000000000000F0) >> 4) + (((value & 0x0000000000000F00) >> 8) * 10) + (((value & 0x000000000000F000) >> 12) * 100) + (((value & 0x00000000000F0000) >> 16) * 1000) + (((value & 0x0000000000F00000) >> 20) * 10000) + (((value & 0x000000000F000000) >> 24) * 100000) + (((value & 0x00000000F0000000) >> 28) * 1000000) + (((value & 0x0000000F00000000) >> 32) * 10000000) + (((value & 0x000000F000000000) >> 36) * 100000000) + (((value & 0x00000F0000000000) >> 40) * 1000000000) + (((value & 0x0000F00000000000) >> 44) * 10000000000) + (((value & 0x000F000000000000) >> 48) * 100000000000) + (((value & 0x00F0000000000000) >> 52) * 1000000000000) + (((value & 0x0F00000000000000) >> 56) * 10000000000000) + (((value & 0xF000000000000000) >> 60) * 100000000000000);
+    //TODO: Read the sign
 }
 
 function setMemorySize(size) {
