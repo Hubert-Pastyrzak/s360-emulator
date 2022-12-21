@@ -1024,6 +1024,27 @@ function cvb(r1, x2, b2, d2) {
     //TODO: Read the sign
 }
 
+function st(sourceRegister, displacement, indexRegister, baseRegister) {
+    let index = (gpr[indexRegister] === 0) ? 0 : gpr[indexRegister];
+    let address = gpr[baseRegister] + index + displacement;
+    
+    if (address >= memory.length) {
+        //TODO: Operation exception
+        return;
+    }
+
+    if (address % 2 === 1) {
+        //TODO: Address exception
+        return;
+    }
+
+    //TODO: Protect violate exception
+    writeMemory(address, {
+        length: 2,
+        value: gpr[sourceRegister]
+    });
+}
+
 function setMemorySize(size) {
     memory = new Array(parseInt(size) * 1024);
 }
